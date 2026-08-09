@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Simulado</title>
+</head>
+<body>
+    <div>
+        {% if messages %}
+            {% for message in messages %}
+                <p><strong>{{ message }}</strong></p>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <h1>Panel Principal (Simulacion de sesión)</h1>
+    <p>Ingreso exitoso como: <strong>{{ request.user.username }}</strong></p>
+
+    <h3>Informacion de usuario</h3>
+    <ul>
+        <li><strong>Nombre completo:</strong> {{ request.user.get_full_name|default:"No especificado" }}</li>
+        <li><strong>Email:</strong> {{ request.user.email }}</li>
+        <li><strong>¿Es empleado?:</strong> {{ request.user.es_empleado }}</li>
+        {% if request.user.perfil_empleado %}
+            <li><strong>DNI:</strong> {{ request.user.perfil_empleado.dni }}</li>
+            <li><strong>Teléfono:</strong> {{ request.user.perfil_empleado.telefono }}</li>
+            <li><strong>Rol:</strong> {{ request.user.perfil_empleado.rol.puesto|default:"Sin Rol" }}</li>
+        {% endif %}
+    </ul>
+
+    <hr>
+
+    <form action="{% url 'logout' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit">Cerrar Sesion</button>
+    </form>
+</body>
+</html>
