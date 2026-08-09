@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
@@ -8,6 +10,7 @@ from django.views.decorators.http import require_http_methods, require_POST
 from .forms import LoginForm
 from .services import procesar_login, procesar_logout
 
+logger = logging.getLogger(__name__)
 
 # Create your views here.
 @never_cache
@@ -33,6 +36,9 @@ def login_view(request):
             return redirect(next_url)
 
         else:
+            intento_usuario = request.POST.get('username', 'Desconocido')
+            logger.warning(f"Intento de login fallido | Usuario '{intento_usuario}' (IP: {request.META.get('REMOTE_ADDR')})")
+
             for error in form.non_field_errors():
                 messages.error(request, error)
 
