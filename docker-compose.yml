@@ -22,8 +22,8 @@ services:
     environment:
       DJANGO_SETTINGS_MODULE: config.settings
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
-      DJANGO_SECRET_KEY: ${SECRET_KEY}
-      DJANGO_DEBUG: "False"
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: "False"
     depends_on:
       db:
         condition: service_healthy
