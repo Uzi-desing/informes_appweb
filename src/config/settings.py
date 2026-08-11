@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.usuarios',
+    'apps.informes',
 ]
 
 MIDDLEWARE = [
@@ -164,5 +165,9 @@ LOGGING = {
             'propagate': False,
         },
     },
-
 }
+
+# Azure Storage
+AZURE_CONTAINER_NAME = os.getenv('AZURE_CONTAINER_NAME')
+AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
+AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
