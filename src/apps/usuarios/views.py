@@ -53,9 +53,3 @@ def logout_view(request):
     mensaje = procesar_logout(request)
     messages.info(request, mensaje)
     return redirect('login')
-
-@never_cache
-@login_required
-@require_http_methods(["GET", "POST"])
-def simulacion_home(request):
-    return render(request, 'home_simulator.html')
