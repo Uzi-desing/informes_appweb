@@ -1,7 +1,6 @@
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.cache import never_cache
@@ -17,7 +16,7 @@ logger = logging.getLogger(__name__)
 @require_http_methods(["GET", "POST"])
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('home_simulado')
+        return redirect('home')
 
     if request.method == 'POST':
         form = LoginForm(request, data=request.POST)
@@ -31,7 +30,7 @@ def login_view(request):
                 url=next_url,
                 allowed_hosts={request.get_host()}
             ):
-                next_url = 'home_simulado'
+                next_url = 'home'
 
             return redirect(next_url)
 
