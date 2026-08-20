@@ -46,6 +46,21 @@ class Cliente(models.Model):
         return self.nombre
 
 class UsuarioTransportista(models.Model):
+    nombre = models.CharField(max_length=255)
+    apellido = models.CharField(max_length=255)
+    dni = models.CharField(max_length=20, unique=True)
+    class Meta:
+        verbose_name = 'Transportista'
+        verbose_name_plural = 'Transportistas'
+
+    @property
+    def nombre_completo(self):
+        return f"{self.nombre} {self.apellido}"
+    
+    def __str__(self):
+        return f"{self.nombre_completo} (DNI: {self.dni})"
+
+class Vehiculo(models.Model):
     class TipoTransporte(models.TextChoices):
         CAMION = 'CAMION', 'Camión'
         SEMIREMOLQUE = 'SEMIREMOLQUE', 'Semirremolque'
@@ -53,22 +68,17 @@ class UsuarioTransportista(models.Model):
         FURGONETA = 'FURGONETA', 'Furgoneta'
         PARTICULAR = 'PARTICULAR', 'Particular'
 
-    nombre = models.CharField(max_length=255)
-    apellido = models.CharField(max_length=255)
-    dni = models.CharField(max_length=20, unique=True)
-    patente = models.CharField(max_length=20, unique=True)
-    transporte = models.CharField(
-        max_length=20,
-        choices=TipoTransporte.choices,
-        default=TipoTransporte.CAMION
-    )
+    OPCIONES_TRANSPORTE = TipoTransporte.choices
 
-    class Meta:
-        verbose_name = 'Transportista'
-        verbose_name_plural = 'Transportistas'
+    patente = models.CharField(max_length=20, unique=True)
+    tipo = models.CharField(max_length=20, choices=TipoTransporte.choices, default=TipoTransporte.CAMION)
+
+    class Meta: 
+        verbose_name = 'Vehículo'
+        verbose_name_plural = 'Vehículos'
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido} ({self.patente})"
+        return f"{self.patente} ({self.get_tipo_display()})"
 
 class Pieza(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name='piezas')
@@ -92,6 +102,7 @@ class InformeDano(models.Model):
     empleado = models.ForeignKey(Empleado, on_delete=models.PROTECT, related_name='informes_creados')
     cliente = models.ForeignKey(Cliente, on_delete=models.PROTECT, related_name='informes')
     transportista = models.ForeignKey(UsuarioTransportista, on_delete=models.PROTECT, related_name='informes')
+    vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, related_name='informes')
     remito_recepcion = models.CharField(
         max_length=100,
         unique=True,
@@ -100,7 +111,6 @@ class InformeDano(models.Model):
         },
     )
     fecha = models.DateField(auto_now_add=True)
-    patente_informe = models.CharField(max_length=20, null=True, blank=True)
     finalizado = models.BooleanField(default=False)
 
     objects = InformesDanoQuerySet.as_manager()
@@ -122,8 +132,6 @@ class InformeDano(models.Model):
 
     def save(self, *args, **kwargs):
         self.full_clean()
-        if not self.patente_informe and self.transportista:
-            self.patente_informe = self.transportista.patente
         super().save(*args, **kwargs)
 
     def __str__(self):
