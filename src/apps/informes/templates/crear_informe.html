@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Informe{% endblock %}
+
+{% block content %}
+    <h2>Crear Nuevo Informe</h2>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="POST" novalidate>
+        {% csrf_token %}
+
+        <p>Empleado: <strong>{{ user.get_full_name|default:user.username }}</strong></p>
+
+        <h3>Información del Informe</h3>
+        {{ informe_form.non_field_errors }}
+        <div>
+            <label for="id_cliente">Cliente <span>*</span></label>
+            {{ informe_form.cliente }}
+            {% for error in informe_form.cliente.errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+            <label for="id_remito_recepcion">Nº de Remito <span>*</span></label>
+            {{ informe_form.remito_recepcion }}
+            {% for error in informe_form.remito_recepcion.errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+
+        <h3>Conductor</h3>
+        {{ transportista_form.non_field_errors }}
+        <div>
+            <label for="id_nombre">Nombre <span>*</span></label>
+            {{ transportista_form.nombre }}
+            {% for error in transportista_form.nombre.errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+            <label for="id_apellido">Apellido <span>*</span></label>
+            {{ transportista_form.apellido }}
+            {% for error in transportista_form.apellido.errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+            <label for="id_dni">DNI <span>*</span></label>
+            {{ transportista_form.dni }}
+            {% for error in transportista_form.dni.errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+
+        <h3>Vehículo</h3>
+        {{ vehiculo_form.non_field_errors }}
+        <div>
+            <label for="id_patente">Patente <span>*</span></label>
+            {{ vehiculo_form.patente }}
+            {% for error in vehiculo_form.patente.errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+        <div>
+            <label for="id_tipo">Tipo de Transporte <span>*</span></label>
+            {{ vehiculo_form.tipo }}
+            {% for error in vehiculo_form.tipo.errors %}<p>{{ error }}</p>{% endfor %}
+        </div>
+
+        <button type="submit">Registrar Informe</button>
+    </form>
+{% endblock %}
