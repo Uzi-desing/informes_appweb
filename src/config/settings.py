@@ -166,6 +166,11 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'apps.informes':{
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        }
     },
 }
 
