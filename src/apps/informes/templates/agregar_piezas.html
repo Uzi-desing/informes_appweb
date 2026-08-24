@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+
+{% block title %}Paso 2: Piezas Rechazadas{% endblock %}
+
+{% block content %}
+
+<style>
+    input[name$="-DELETE"], label[for$="-DELETE"] {
+    display: none;
+}
+    .campo-invalido {
+        border: 2px solid #dc3545 !important;
+    }
+</style>
+
+<div>
+    <h2>Paso 2: Cargar Piezas - Remito N° {{ informe.remito_recepcion }}</h2>
+    <p>Agregue las piezas dañadas y su respectiva evidencia fotográfica.</p>
+
+    <div id="banner-mensajes"></div>
+
+    <form method="POST" enctype="multipart/form-data" id="formulario-piezas">
+        {% csrf_token %}
+        {{ formset.management_form }}
+
+        <div id="formset-container">
+            {% for form in formset.forms %}
+                <div class="pieza-form">
+                    <h3>Pieza Dañada</h3>
+                    {{ form.as_p }}
+
+                    <button type="button" class="remove-form-btn">
+                        Eliminar Pieza
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div>
+            <button type="button" id="add-form-btn">
+                + Agregar otra pieza
+            </button>
+            
+            <button type="submit" id="submit-btn">
+                Finalizar y Guardar Informe
+            </button>
+        </div>
+    </form>
+</div>
+
+<div id="empty-form" hidden>
+    <div class="pieza-form">
+        <h3>Nueva Pieza</h3>
+        {{ formset.empty_form.as_p }}
+
+        <button type="button" class="remove-form-btn">
+            Eliminar Pieza
+        </button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const container = document.getElementById('formset-container');
+    const addBtn = document.getElementById('add-form-btn');
+    const totalFormsInput = document.querySelector('input[name$="-TOTAL_FORMS"]');
+    const emptyFormTemplate = document.getElementById('empty-form').innerHTML;
+    const bannerMensajes = document.getElementById('banner-mensajes');
+
+    function agregarFormulario() {
+        const formCount = parseInt(totalFormsInput.value);
+        const newFormHtml = emptyFormTemplate.replace(/__prefix__/g, formCount);
+        container.insertAdjacentHTML('beforeend', newFormHtml);
+        totalFormsInput.value = formCount + 1;
+    }
+
+    function mostrarMensaje(texto) {
+        bannerMensajes.innerHTML = '';
+        const parrafo = document.createElement('p');
+        parrafo.textContent = texto;
+        bannerMensajes.appendChild(parrafo);
+    }
+
+    function limpiarMensaje() {
+        bannerMensajes.innerHTML = '';
+    }
+
+    // agregar: clona el empty_form con el índice siguiente
+    addBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        agregarFormulario();
+        limpiarMensaje();
+    });
+
+    // reindexar: deja los prefijos consecutivos sin huecos
+    function reindexForms() {
+        const forms = container.querySelectorAll('.pieza-form');
+        forms.forEach(function (div, index) {
+            div.querySelectorAll('input, select, textarea, label').forEach(function (el) {
+                ['name', 'id', 'for'].forEach(function (attr) {
+                    const val = el.getAttribute(attr);
+                    if (val) {
+                        el.setAttribute(attr, val.replace(/-\d+-/g, `-${index}-`));
+                    }
+                });
+            });
+        });
+        totalFormsInput.value = forms.length;
+    }
+
+    // eliminar pieza
+    container.addEventListener('click', function (e) {
+        if (!e.target.classList.contains('remove-form-btn')) return;
+        e.preventDefault();
+        const formDiv = e.target.closest('.pieza-form');
+        const idInput = formDiv.querySelector('input[name$="-id"]');
+        const esNuevaFila = !idInput || !idInput.value;
+
+        if (esNuevaFila) {
+            formDiv.remove();
+            reindexForms();    // ...y se reindexan los demás
+        } else {
+            
+            const deleteInput = formDiv.querySelector('input[name$="-DELETE"]');
+            if (deleteInput) deleteInput.checked = true;
+            formDiv.hidden = true;
+        }
+    });
+
+    // validación cliente antes del envío
+    const formulario = document.getElementById('formulario-piezas');
+    const submitBtn = document.getElementById('submit-btn');
+    const CAMPOS_REQUERIDOS = ['pieza', 'categoria_dano', 'cantidad', 'imagen'];
+
+    formulario.addEventListener('submit', function (e) {
+        // Solo se validan las filas visibles (las DELETE ocultas se ignoran)
+        const formsVisibles = [...container.querySelectorAll('.pieza-form')]
+            .filter(div => !div.hidden);
+
+        // Caso 1: no queda ninguna pieza -> generar formulario vacío + mensaje
+        if (formsVisibles.length === 0) {
+            e.preventDefault();
+            agregarFormulario();
+            mostrarMensaje('Debe registrar al menos una pieza.');
+            const nuevoForm = container.querySelector('.pieza-form:last-child');
+            if (nuevoForm) nuevoForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        // Caso 2: hay piezas pero faltan campos obligatorios
+        let primerError = null;
+
+        formsVisibles.forEach(function (div) {
+            CAMPOS_REQUERIDOS.forEach(function (campo) {
+                const input = div.querySelector(`[name$="-${campo}"]`);
+                if (!input) return;
+                const vacio = input.type === 'file'
+                    ? input.files.length === 0
+                    : input.type === 'number'
+                        ? (input.value === '' || parseFloat(input.value) < parseInt(input.min || 1))
+                        : !input.value;
+                if (vacio) {
+                    input.classList.add('campo-invalido');
+                    if (!primerError) primerError = input;
+                } else {
+                    input.classList.remove('campo-invalido');
+                }
+            });
+        });
+
+        if (primerError) {
+            e.preventDefault();
+            mostrarMensaje('Complete todos los campos obligatorios de cada pieza (incluida la fotografía).');
+            primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        limpiarMensaje();
+
+        // Todo OK: bloquear doble envío y enviar
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Subiendo imágenes y guardando...';
+    });
+});
+</script>
+{% endblock %}
