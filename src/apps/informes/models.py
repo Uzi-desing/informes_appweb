@@ -1,6 +1,7 @@
 import uuid
 
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from apps.usuarios.models import Empleado
@@ -147,7 +148,7 @@ class PiezaRechazada(models.Model):
     pieza = models.ForeignKey('Pieza', on_delete=models.PROTECT, related_name='piezas_rechazadas')
     categoria_dano = models.ForeignKey('CategoriaDano', on_delete=models.PROTECT, related_name='piezas_rechazadas')
     observaciones = models.TextField(blank=True, null=True)
-    cantidad = models.PositiveIntegerField(default=1)
+    cantidad = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     imagen = models.ImageField(upload_to='piezas-rechazadas-images/', storage=AzureMediaStorage(), blank=True, null=True)
 
     @property
