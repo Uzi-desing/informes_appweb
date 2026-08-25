@@ -46,6 +46,15 @@
             </button>
         </div>
     </form>
+
+    <form method="POST"
+          action="{% url 'cancelar_informe' informe.uuid_identificador %}"
+          onsubmit="return confirm('¿Cancelar el informe N° {{ informe.remito_recepcion }}? Se eliminará junto con sus piezas.');">
+        {% csrf_token %}
+        <button type="submit" id="cancel-btn">
+            Cancelar Informe
+        </button>
+    </form>
 </div>
 
 <div id="empty-form" hidden>
