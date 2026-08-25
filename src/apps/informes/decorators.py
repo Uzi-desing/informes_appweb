@@ -2,6 +2,9 @@ from functools import wraps
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.shortcuts import redirect
+
+from .models import InformeDano
 
 
 def solo_operarios(view_func):
@@ -26,4 +29,17 @@ def solo_operarios(view_func):
         raise PermissionDenied("Acceso Denegado: Se requiere perfil de Operario.")
 
     return _wrapped_view
-    
+
+def bloqueo_informe_pendiente(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        perfil = getattr(request.user, 'perfil_empleado', None)
+        if perfil is not None:
+            pendiente = InformeDano.objects.filter(
+                empleado=perfil, finalizado=False
+            ).order_by('fecha').first()
+            if pendiente:
+                return redirect('registrar_piezas', uuid=pendiente.uuid_identificador)
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped_view
