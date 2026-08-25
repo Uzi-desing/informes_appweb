@@ -28,3 +28,11 @@ class InformeService:
         informe.save()
 
         return informe
+
+    @staticmethod
+    @transaction.atomic
+    def cancelar_informe(informe):
+        remito = informe.remito_recepcion
+        informe.delete()
+
+        return remito

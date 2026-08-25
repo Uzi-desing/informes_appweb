@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
-from .decorators import solo_operarios
+from .decorators import bloqueo_informe_pendiente, solo_operarios
 from .forms import InformeDanoForm, TransportistaForm, VehiculoForm, PiezaRechazadaFormSet
 from .models import InformeDano
 from .services.informe_service import InformeService
@@ -20,12 +20,14 @@ logger = logging.getLogger(__name__)
 @never_cache
 @require_http_methods(["GET", "POST"])
 @solo_operarios
+@bloqueo_informe_pendiente
 def home(request):
     return render(request, 'home.html')
 
 @never_cache
 @require_http_methods(["GET", "POST"])
 @solo_operarios
+@bloqueo_informe_pendiente
 def crear_informe_view(request):
     if request.method == 'POST':
         informe_form = InformeDanoForm(request.POST)
@@ -103,3 +105,26 @@ def registrar_piezas(request, uuid):
         'formset': formset
     }
     return render(request, 'agregar_piezas.html', context)
+
+@never_cache
+@require_http_methods(["POST"])
+@solo_operarios
+def cancelar_informe(request, uuid):
+    perfil = getattr(request.user, 'perfil_empleado', None)
+    informe = get_object_or_404(
+        InformeDano,
+        uuid_identificador=uuid,
+        finalizado=False,
+        empleado=perfil,
+    )
+
+    try:
+        remito = InformeService.cancelar_informe(informe)
+    except Exception as e:  # noqa: BLE001
+        logger.error(f"Error al cancelar el informe {uuid}: {e!s}")
+        messages.error(request, "No se pudo cancelar el informe.")
+        return redirect('registrar_piezas', uuid=uuid)
+
+    logger.info(f"Informe Nº{remito} cancelado por '{request.user.username}'.")
+    messages.info(request, f"Informe Nº{remito} cancelado y eliminado.")
+    return redirect('home')
