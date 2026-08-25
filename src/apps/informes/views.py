@@ -67,7 +67,7 @@ def crear_informe_view(request):
 
 @require_http_methods(["GET", "POST"])
 @solo_operarios
-def registrar_piezas(request, uuid):
+def registrar_piezas_view(request, uuid):
     informe = get_object_or_404(InformeDano, uuid_identificador=uuid)
 
     if informe.esta_bloqueado:
@@ -109,7 +109,7 @@ def registrar_piezas(request, uuid):
 @never_cache
 @require_http_methods(["POST"])
 @solo_operarios
-def cancelar_informe(request, uuid):
+def cancelar_informe_view(request, uuid):
     perfil = getattr(request.user, 'perfil_empleado', None)
     informe = get_object_or_404(
         InformeDano,
