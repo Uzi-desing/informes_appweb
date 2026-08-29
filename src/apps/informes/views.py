@@ -8,7 +8,12 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
 from .decorators import bloqueo_informe_pendiente, solo_operarios
-from .forms import InformeDanoForm, TransportistaForm, VehiculoForm, PiezaRechazadaFormSet
+from .forms import (
+    InformeDanoForm,
+    PiezaRechazadaFormSet,
+    TransportistaForm,
+    VehiculoForm,
+)
 from .models import InformeDano
 from .services.informe_service import InformeService
 from .services.pieza_service import PiezaService
@@ -37,7 +42,6 @@ def crear_informe_view(request):
         if informe_form.is_valid() and transportista_form.is_valid() and vehiculo_form.is_valid():
             try:
                 informe = InformeService.crear_informe_completo(informe_form, transportista_form, vehiculo_form, request.user.perfil_empleado)
-                messages.success(request, f"Informe Nº {informe.remito_recepcion} creado con éxito.")
                 logger.info(f"Informe Nº {informe.remito_recepcion} creado por '{request.user.username}'.")
                 return redirect('registrar_piezas', uuid=informe.uuid_identificador)
             
@@ -83,7 +87,7 @@ def registrar_piezas_view(request, uuid):
                 PiezaService.procesar_piezas_y_finalizar(informe, formset)
 
                 logger.info(f"Informe Nº{informe.remito_recepcion} completado con exito.")
-                messages.success(request, f"Informe Nº{informe.remito_recepcion} completado exitosamente.")
+                messages.success(request, f"Informe Nº {informe.remito_recepcion} completado exitosamente.")
 
                 return redirect('home')
 

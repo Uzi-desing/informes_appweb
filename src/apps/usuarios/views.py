@@ -22,8 +22,7 @@ def login_view(request):
         form = LoginForm(request, data=request.POST)
 
         if form.is_valid():
-            mensaje = procesar_login(request, form)
-            messages.success(request, mensaje)
+            procesar_login(request, form)
 
             next_url = request.GET.get('next')
             if not next_url or not url_has_allowed_host_and_scheme(
@@ -39,7 +38,10 @@ def login_view(request):
             logger.warning(f"Intento de login fallido | Usuario '{intento_usuario}' (IP: {request.META.get('REMOTE_ADDR')})")
 
             for error in form.non_field_errors():
-                messages.error(request, error)
+                if 'inactiva' in str(error).lower() or 'inactive' in str(error).lower():
+                    messages.error(request, error, extra_tags='inactive')
+                else:
+                    messages.error(request, error, extra_tags='invalid_login')
 
     else:
         form = LoginForm(request)
