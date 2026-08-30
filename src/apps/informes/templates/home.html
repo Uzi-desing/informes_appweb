@@ -1,14 +1,51 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Inicio{% endblock %}
 
-{% block content %}
-    {% if messages %}
-        <ul>
-            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
-        </ul>
-    {% endif %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
 
-    <h2>Bienvenido/a, {{ user.get_full_name|default:user.username }}</h2>
-    <p>Has ingresado correctamente al sistema de informes.</p>
+{% block content %}
+<div class="w-full max-w-7xl mx-auto mt-4 px-4">
+    <h1 class="text-lg sm:text-xl font-semibold tracking-tight text-black dark:text-gray-100">
+        Bienvenido, <span class="text-brand font-bold">{{ user.get_full_name|default:user.username|title }}</span>
+    </h1>
+    <p class="text-sm text-black/50 dark:text-gray-400 mb-6">¿Qué deseas hacer el día de hoy?</p>
+
+    <!-- Notificaciones-->
+    <div id="toast-container" class="fixed top-20 right-4 z-[100] flex flex-col items-end gap-3 pr-4 w-[calc(100%-2rem)] max-w-sm pointer-events-none">
+        {% for message in messages %}
+            <div data-toast class="toast-item pointer-events-auto flex items-center justify-between gap-3 rounded-lg shadow-lg px-4 py-3 text-sm font-medium text-white {% if 'error' in message.tags %}bg-red-600{% else %}bg-green-500{% endif %}">
+                <span>{{ message }}</span>
+                <button type="button" data-toast-close class="shrink-0 ml-2 w-5 h-5 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white text-xs leading-none cursor-pointer transition-colors">×</button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Seccion de Acciones -->
+    <div class="p-6 rounded-lg border border-black/10 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md transition-colors duration-500">
+        <div class="grid grid-cols-1 gap-4">
+
+            <!-- Botón de Crear Informe -->
+            <form method="get" action="{% url 'crear_informe' %}">
+                <button type="submit" class="w-full p-3 rounded-lg border border-black/10 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-brand transition-all text-left flex items-center gap-3">
+                    <div class="bg-brand p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-black dark:text-gray-100">Crear Informe</h3>
+                        <p class="text-sm text-black/50 dark:text-gray-400">Registrar nuevo informe de daño</p>
+                    </div>
+                </button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/home.js' %}"></script>
 {% endblock %}

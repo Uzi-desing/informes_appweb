@@ -4,14 +4,29 @@ from django.forms import inlineformset_factory
 
 from .models import InformeDano, PiezaRechazada, UsuarioTransportista, Vehiculo
 
+CLASE_INPUT = (
+    'w-full rounded-lg border border-gray-300 dark:border-gray-600 '
+    'bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 '
+    'px-3 py-2 text-sm placeholder-gray-400 dark:placeholder-gray-500 '
+    'focus:outline-none focus:ring-2 focus:ring-brand/50 focus:border-brand '
+    'transition-colors duration-200'
+)
+
+CLASE_FILE_INPUT = (
+    'w-full text-sm text-gray-900 dark:text-gray-100 '
+    'file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 '
+    'file:bg-brand file:px-3 file:py-2 file:text-xs file:font-semibold '
+    'file:text-white hover:file:bg-red-700 transition-colors duration-200'
+)
+
 
 class InformeDanoForm(forms.ModelForm):
     class Meta:
         model = InformeDano
         fields = ['cliente', 'remito_recepcion']  # noqa: RUF012
         widgets = {  # noqa: RUF012
-            'cliente': forms.Select(attrs={'class': 'form-select'}),
-            'remito_recepcion': forms.TextInput(attrs={'class': 'form-input'}),
+            'cliente': forms.Select(attrs={'class': CLASE_INPUT}),
+            'remito_recepcion': forms.TextInput(attrs={'class': CLASE_INPUT}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -30,10 +45,10 @@ class TransportistaForm(forms.ModelForm):
         model = UsuarioTransportista
         fields = ['nombre', 'apellido', 'dni']
         widgets = {  # noqa: RUF012
-            'nombre': forms.TextInput(attrs={'class': 'form-input'}),
-            'apellido': forms.TextInput(attrs={'class': 'form-input'}),
+            'nombre': forms.TextInput(attrs={'class': CLASE_INPUT}),
+            'apellido': forms.TextInput(attrs={'class': CLASE_INPUT}),
             'dni': forms.TextInput(attrs={
-                'class': 'form-input',
+                'class': CLASE_INPUT,
                 'inputmode': 'numeric',
                 'pattern': '[0-9]*',
             })
@@ -65,8 +80,8 @@ class VehiculoForm(forms.ModelForm):
         model = Vehiculo
         fields = ['patente', 'tipo']
         widgets = {
-            'patente': forms.TextInput(attrs={'class': 'form-input'}),
-            'tipo': forms.Select(attrs={'class': 'form-select'}),
+            'patente': forms.TextInput(attrs={'class': CLASE_INPUT}),
+            'tipo': forms.Select(attrs={'class': CLASE_INPUT}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -84,12 +99,12 @@ class PiezaRechazadaForm(forms.ModelForm):
         model = PiezaRechazada
         fields = ['pieza', 'categoria_dano', 'cantidad', 'observaciones', 'imagen']  # noqa: RUF012
         widgets = {  # noqa: RUF012
-            'pieza': forms.Select(attrs={'class': 'form-select'}),
-            'categoria_dano': forms.Select(attrs={'class': 'form-select'}),
-            'cantidad': forms.NumberInput(attrs={'class': 'form-input', 'min': '1'}),
-            'observaciones': forms.Textarea(attrs={'class': 'form-input', 'rows': '2'}),
+            'pieza': forms.Select(attrs={'class': CLASE_INPUT}),
+            'categoria_dano': forms.Select(attrs={'class': CLASE_INPUT}),
+            'cantidad': forms.NumberInput(attrs={'class': CLASE_INPUT, 'min': '1'}),
+            'observaciones': forms.Textarea(attrs={'class': CLASE_INPUT, 'rows': '2'}),
             'imagen': forms.ClearableFileInput(attrs={
-                'class': 'form-file-input',
+                'class': CLASE_FILE_INPUT,
                 'capture': 'environment',
                 'accept': 'image/*'
             })

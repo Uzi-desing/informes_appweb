@@ -5,6 +5,8 @@ build/
 dist/
 wheels/
 *.egg-info
+src/static/img/logo.png
+src/static/img/logo_darkmode.png
 
 # Virtual environments
 .venv

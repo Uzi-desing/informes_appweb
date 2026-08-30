@@ -1,0 +1,50 @@
+body {
+    background: linear-gradient(to top, #ff6b6b 0%, #ffffff 70%);
+}
+html {
+    transition: background-color 1s ease, color 1s ease;
+}
+#dark-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(to top, #7f1d1d 0%, #1a1a1a 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 0;
+}
+html.dark #dark-overlay {
+    opacity: 1;
+}
+body > * {
+    position: relative;
+    z-index: 1;
+}
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.animate-fade-up {
+    animation: fade-up 0.6s ease-out forwards;
+}
+html.dark input[type="text"],
+html.dark input[type="password"] {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+html.dark input[type="text"]::placeholder,
+html.dark input[type="password"]::placeholder {
+    color: #9ca3af;
+}
+html.dark input[type="text"]:focus,
+html.dark input[type="password"]:focus {
+    border-color: #fe2020;
+    box-shadow: 0 0 0 3px rgba(254, 32, 32, 0.2);
+}

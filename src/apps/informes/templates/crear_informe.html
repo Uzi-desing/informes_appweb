@@ -3,63 +3,123 @@
 {% block title %}Crear Informe{% endblock %}
 
 {% block content %}
-    <h2>Crear Nuevo Informe</h2>
+<div class="w-full max-w-3xl mx-auto mt-4 mb-8 px-4">
 
     {% if messages %}
-        <ul>
-            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
-        </ul>
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+                <p class="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg px-4 py-2">{{ message }}</p>
+            {% endfor %}
+        </div>
     {% endif %}
 
-    <form method="POST" novalidate>
-        {% csrf_token %}
+    <div class="p-4 rounded-lg border border-black/10 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md transition-colors duration-500">
 
-        <p>Empleado: <strong>{{ user.get_full_name|default:user.username }}</strong></p>
+        <form method="POST" novalidate class="space-y-3">
+            {% csrf_token %}
 
-        <h3>Información del Informe</h3>
-        {{ informe_form.non_field_errors }}
-        <div>
-            <label for="id_cliente">Cliente <span>*</span></label>
-            {{ informe_form.cliente }}
-            {% for error in informe_form.cliente.errors %}<p>{{ error }}</p>{% endfor %}
-        </div>
-        <div>
-            <label for="id_remito_recepcion">Nº de Remito <span>*</span></label>
-            {{ informe_form.remito_recepcion }}
-            {% for error in informe_form.remito_recepcion.errors %}<p>{{ error }}</p>{% endfor %}
-        </div>
+            <!-- Formulario de Información del Informe -->
+            <div class="flex items-center justify-between border-b border-black/10 dark:border-gray-700 pb-2 mb-3">
+                <h2 class="text-lg font-semibold text-black dark:text-gray-100">
+                    Información del Informe
+                </h2>
+                <p class="text-sm text-black/50 dark:text-gray-400">
+                    <span class="font-semibold text-black dark:text-gray-200">{{ user.get_full_name|default:user.username|title }}</span>
+                </p>
+            </div>
+            {{ informe_form.non_field_errors }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <!-- Campos de Información del Informe -->
+                <div class="mb-3">
+                    <label for="id_remito_recepcion" class="block text-sm font-medium text-black/80 dark:text-gray-300 mb-1">
+                        Nº de Remito <span class="text-brand ml-1">*</span>
+                    </label>
+                    {{ informe_form.remito_recepcion }}
+                    {% for error in informe_form.remito_recepcion.errors %}
+                        <p class="text-brand text-xs mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label for="id_cliente" class="block text-sm font-medium text-black/80 dark:text-gray-300 mb-1">
+                        Cliente <span class="text-brand ml-1">*</span>
+                    </label>
+                    {{ informe_form.cliente }}
+                    {% for error in informe_form.cliente.errors %}
+                        <p class="text-brand text-xs mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
 
-        <h3>Conductor</h3>
-        {{ transportista_form.non_field_errors }}
-        <div>
-            <label for="id_nombre">Nombre <span>*</span></label>
-            {{ transportista_form.nombre }}
-            {% for error in transportista_form.nombre.errors %}<p>{{ error }}</p>{% endfor %}
-        </div>
-        <div>
-            <label for="id_apellido">Apellido <span>*</span></label>
-            {{ transportista_form.apellido }}
-            {% for error in transportista_form.apellido.errors %}<p>{{ error }}</p>{% endfor %}
-        </div>
-        <div>
-            <label for="id_dni">DNI <span>*</span></label>
-            {{ transportista_form.dni }}
-            {% for error in transportista_form.dni.errors %}<p>{{ error }}</p>{% endfor %}
-        </div>
+            <!-- Formulario del Transportista -->
+            <h2 class="text-lg font-semibold mt-6 mb-3 border-b border-black/10 dark:border-gray-700 pb-2 text-black dark:text-gray-100">
+                Conductor
+            </h2>
+            {{ transportista_form.non_field_errors }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="mb-3">
+                    <label for="id_nombre" class="block text-sm font-medium text-black/80 dark:text-gray-300 mb-1">
+                        Nombre <span class="text-brand ml-1">*</span>
+                    </label>
+                    {{ transportista_form.nombre }}
+                    {% for error in transportista_form.nombre.errors %}
+                        <p class="text-brand text-xs mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label for="id_apellido" class="block text-sm font-medium text-black/80 dark:text-gray-300 mb-1">
+                        Apellido <span class="text-brand ml-1">*</span>
+                    </label>
+                    {{ transportista_form.apellido }}
+                    {% for error in transportista_form.apellido.errors %}
+                        <p class="text-brand text-xs mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label for="id_dni" class="block text-sm font-medium text-black/80 dark:text-gray-300 mb-1">
+                        DNI <span class="text-brand ml-1">*</span>
+                    </label>
+                    {{ transportista_form.dni }}
+                    {% for error in transportista_form.dni.errors %}
+                        <p class="text-brand text-xs mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
 
-        <h3>Vehículo</h3>
-        {{ vehiculo_form.non_field_errors }}
-        <div>
-            <label for="id_patente">Patente <span>*</span></label>
-            {{ vehiculo_form.patente }}
-            {% for error in vehiculo_form.patente.errors %}<p>{{ error }}</p>{% endfor %}
-        </div>
-        <div>
-            <label for="id_tipo">Tipo de Transporte <span>*</span></label>
-            {{ vehiculo_form.tipo }}
-            {% for error in vehiculo_form.tipo.errors %}<p>{{ error }}</p>{% endfor %}
-        </div>
+            <!-- Formulario del Transporte -->
+            <h2 class="text-lg font-semibold mt-6 mb-3 border-b border-black/10 dark:border-gray-700 pb-2 text-black dark:text-gray-100">
+                Vehículo
+            </h2>
+            {{ vehiculo_form.non_field_errors }}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="mb-3">
+                    <label for="id_patente" class="block text-sm font-medium text-black/80 dark:text-gray-300 mb-1">
+                        Patente <span class="text-brand ml-1">*</span>
+                    </label>
+                    {{ vehiculo_form.patente }}
+                    {% for error in vehiculo_form.patente.errors %}
+                        <p class="text-brand text-xs mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div class="mb-3">
+                    <label for="id_tipo" class="block text-sm font-medium text-black/80 dark:text-gray-300 mb-1">
+                        Tipo de Transporte <span class="text-brand ml-1">*</span>
+                    </label>
+                    {{ vehiculo_form.tipo }}
+                    {% for error in vehiculo_form.tipo.errors %}
+                        <p class="text-brand text-xs mt-1">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
 
-        <button type="submit">Registrar Informe</button>
-    </form>
+            <div class="flex justify-center mt-4">
+                <button type="submit"
+                    class="w-full sm:w-auto inline-flex items-center justify-center rounded-md border border-black dark:border-gray-500 px-4 py-2 text-sm font-medium text-black dark:text-gray-200 hover:bg-brand hover:border-brand hover:text-white transition-colors cursor-pointer">
+                    Registrar Informe
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+</div>
 {% endblock %}
