@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
 
-from .models import InformeDano, PiezaRechazada, UsuarioTransportista, Vehiculo
+from .models import Cliente, InformeDano, PiezaRechazada, UsuarioTransportista, Vehiculo
 
 CLASE_INPUT = (
     'w-full rounded-lg border border-gray-300 dark:border-gray-600 '
@@ -143,3 +143,26 @@ PiezaRechazadaFormSet = inlineformset_factory(
         'too_few_forms': 'Debe registrar al menos una pieza.',
     },
 )
+
+# Formulario Cliente
+class ClienteForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = ['nombre', 'telefono', 'mail', 'domicilio']  # noqa: RUF012
+        widgets = {  # noqa: RUF012
+            'nombre': forms.TextInput(attrs={'class': CLASE_INPUT}),
+            'telefono': forms.TextInput(attrs={'class': CLASE_INPUT, 'inputmode': 'tel'}),
+            'mail': forms.EmailInput(attrs={'class': CLASE_INPUT}),
+            'domicilio': forms.TextInput(attrs={'class': CLASE_INPUT}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        mensajes_personalizados = {
+            'nombre': 'El Nombre es obligatorio.',
+            'telefono': 'El Teléfono es obligatorio.',
+            'domicilio': 'El Domicilio es obligatorio.',
+        }
+        for campo, mensaje in mensajes_personalizados.items():
+            self.fields[campo].required = True
+            self.fields[campo].error_messages['required'] = mensaje
