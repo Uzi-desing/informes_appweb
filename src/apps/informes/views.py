@@ -15,6 +15,8 @@ from .forms import (
     TransportistaForm,
     VehiculoForm,
 )
+from apps.usuarios.models import Empleado
+
 from .models import InformeDano
 from .services.cliente_service import ClienteService
 from .services.informe_service import InformeService
@@ -169,3 +171,32 @@ def crear_cliente_view(request):
     }          
 
     return render(request, 'crear_cliente.html', context) 
+
+@never_cache
+@require_http_methods(["GET"])
+@solo_operarios
+def lista_informes_view(request):
+    q = request.GET.get('q', '').strip()
+    empleado_id = request.GET.get('empleado', '').strip()
+    orden = request.GET.get('orden', 'fecha_desc')
+
+    page_obj = InformeService.obtener_informes(
+        request.GET.get('page'), q, empleado_id, orden
+    )
+
+    empleados = Empleado.objects.select_related('usuario').only(
+        'id', 'usuario__first_name', 'usuario__last_name', 'usuario__username'
+    )
+
+    context = {
+        'page_obj': page_obj,
+        'empleados': empleados,
+        'filtros': {
+            'q': q, 'empleado': empleado_id, 'orden': orden,
+        },
+    }
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, '_tabla_informes.html', context)
+
+    return render(request, 'ver_informes.html', context)
