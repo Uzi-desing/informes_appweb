@@ -1,0 +1,72 @@
+<div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-black/10 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/60">
+            <tr>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-gray-400">
+                    <button type="button" data-orden="id" class="hover:text-brand transition-colors">
+                        Nº {% if filtros.orden == 'id_asc' %}↑{% elif filtros.orden == 'id_desc' %}↓{% endif %}
+                    </button>
+                </th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-gray-400">
+                    <button type="button" data-orden="fecha" class="hover:text-brand transition-colors">
+                        Fecha {% if filtros.orden == 'fecha_asc' %}↑{% elif filtros.orden == 'fecha_desc' %}↓{% endif %}
+                    </button>
+                </th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-gray-400">Cliente</th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-gray-400">Remito</th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-gray-400">Empleado</th>
+                <th scope="col" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-black/60 dark:text-gray-400">Estado</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-black/10 dark:divide-gray-700">
+            {% for informe in page_obj %}
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <td class="px-4 py-3 text-sm font-medium text-black dark:text-gray-100">{{ informe.id }}</td>
+                <td class="px-4 py-3 text-sm text-black/70 dark:text-gray-300">{{ informe.fecha|date:"d/m/Y" }}</td>
+                <td class="px-4 py-3 text-sm text-black/70 dark:text-gray-300">{{ informe.cliente.nombre }}</td>
+                <td class="px-4 py-3 text-sm text-black/70 dark:text-gray-300">{{ informe.remito_recepcion }}</td>
+                <td class="px-4 py-3 text-sm text-black/70 dark:text-gray-300">{{ informe.empleado.usuario.get_full_name|title }}</td>
+                <td class="px-4 py-3 text-sm">
+                    {% if informe.finalizado %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300">Finalizado</span>
+                    {% else %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">Pendiente</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="px-4 py-8 text-center text-sm text-black/50 dark:text-gray-400">No se encontraron informes.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div class="flex items-center justify-between px-4 py-3 border-t border-black/10 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/60">
+    <span class="text-sm text-black/50 dark:text-gray-400">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+    </span>
+    <nav class="flex items-center gap-2">
+        {% if page_obj.has_previous %}
+        <button type="button" data-page="{{ page_obj.previous_page_number }}"
+                class="px-3 py-1.5 text-sm font-medium rounded-lg border border-black/10 dark:border-gray-600 hover:border-brand transition-all">Anterior</button>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <span class="px-3 py-1.5 text-sm font-semibold rounded-lg bg-brand text-white">{{ num }}</span>
+            {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+            <button type="button" data-page="{{ num }}"
+                    class="px-3 py-1.5 text-sm font-medium rounded-lg border border-black/10 dark:border-gray-600 hover:border-brand transition-all">{{ num }}</button>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <button type="button" data-page="{{ page_obj.next_page_number }}"
+                class="px-3 py-1.5 text-sm font-medium rounded-lg border border-black/10 dark:border-gray-600 hover:border-brand transition-all">Siguiente</button>
+        {% endif %}
+    </nav>
+</div>
+{% endif %}
