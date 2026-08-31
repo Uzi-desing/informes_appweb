@@ -26,7 +26,7 @@
 
     <!-- Seccion de Acciones -->
     <div class="p-6 rounded-lg border border-black/10 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md transition-colors duration-500">
-        <div class="grid grid-cols-1 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <!-- Botón de Crear Informe -->
             <form method="get" action="{% url 'crear_informe' %}">
@@ -39,6 +39,21 @@
                     <div>
                         <h3 class="font-semibold text-black dark:text-gray-100">Crear Informe</h3>
                         <p class="text-sm text-black/50 dark:text-gray-400">Registrar nuevo informe de daño</p>
+                    </div>
+                </button>
+            </form>
+
+            <!-- Botón de Registrar Cliente -->
+            <form method="get" action="{% url 'crear_cliente' %}">
+                <button type="submit" class="w-full p-3 rounded-lg border border-black/10 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-brand transition-all text-left flex items-center gap-3">
+                    <div class="bg-brand p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9h3.75M15 12h3.75M18.75 3H5.25A2.25 2.25 0 0 0 3 5.25v13.5A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V5.25A2.25 2.25 0 0 0 18.75 3zm-15 3.75h16.5M7.5 12a2.5 2.5 0 1 1 4.99 0 2.5 2.5 0 0 1-4.99 0zm-3 7.5a3 3 0 0 1 6 0" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-black dark:text-gray-100">Registrar Cliente</h3>
+                        <p class="text-sm text-black/50 dark:text-gray-400">Registrar nuevo cliente</p>
                     </div>
                 </button>
             </form>
