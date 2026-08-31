@@ -9,12 +9,14 @@ from django.views.decorators.http import require_http_methods
 
 from .decorators import bloqueo_informe_pendiente, solo_operarios
 from .forms import (
+    ClienteForm,
     InformeDanoForm,
     PiezaRechazadaFormSet,
     TransportistaForm,
     VehiculoForm,
 )
 from .models import InformeDano
+from .services.cliente_service import ClienteService
 from .services.informe_service import InformeService
 from .services.pieza_service import PiezaService
 
@@ -132,3 +134,38 @@ def cancelar_informe_view(request, uuid):
     logger.info(f"Informe Nº{remito} cancelado por '{request.user.username}'.")
     messages.info(request, f"Informe Nº{remito} cancelado y eliminado.")
     return redirect('home')
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@solo_operarios
+def crear_cliente_view(request):
+    if request.method == 'POST':
+        cliente_form = ClienteForm(request.POST)
+
+        if cliente_form.is_valid():
+            try:
+                cliente = ClienteService.crear_cliente(cliente_form)
+                logger.info(f"Nuevo cliente '{cliente.nombre}' registrado por '{request.user.username}'.")
+                messages.success(request, f"Cliente {cliente.nombre} registrado exitosamente.")
+
+                return redirect('home')
+
+            except (ValidationError, IntegrityError, DatabaseError) as e:
+                logger.error(f"Error técnico al guardar cliente: {e!s}")
+                messages.error(request, "No se pudo guardar el cliente, verifique la información.")
+
+            except Exception as e:  # noqa: BLE001
+                logger.error(f"Error al crear cliente: {e!s}")
+                messages.error(request, 'Error interno al guardar el cliente.')
+
+        else:
+            messages.error(request, "Revisa los campos del formulario.")
+
+    else:
+        cliente_form = ClienteForm()
+
+    context = {
+        'cliente_form': cliente_form
+    }          
+
+    return render(request, 'crear_cliente.html', context) 
