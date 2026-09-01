@@ -41,6 +41,12 @@
     selectEmpleado.addEventListener('change', function () { cargar(1); });
 
     contenedor.addEventListener('click', function (e) {
+        var fila = e.target.closest('tr[data-url]');
+        if (fila) {
+            window.location = fila.getAttribute('data-url');
+            return;
+        }
+
         var boton = e.target.closest('[data-page]');
         if (boton) { cargar(boton.getAttribute('data-page')); return; }
 
