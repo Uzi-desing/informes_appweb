@@ -10,4 +10,5 @@ urlpatterns = [
     path('clientes/nuevo/', views.crear_cliente_view, name='crear_cliente'),
     path('informes/', views.lista_informes_view, name='lista_informes'),
     path('clientes/', views.lista_clientes_view, name='lista_clientes'),
+    path('informes/<uuid:uuid>/', views.detalle_informe_view, name='detalle_informe'),
 ]

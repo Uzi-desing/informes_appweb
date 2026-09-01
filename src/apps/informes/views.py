@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
+from apps.usuarios.models import Empleado
+
 from .decorators import bloqueo_informe_pendiente, solo_operarios
 from .forms import (
     ClienteForm,
@@ -15,8 +17,6 @@ from .forms import (
     TransportistaForm,
     VehiculoForm,
 )
-from apps.usuarios.models import Empleado
-
 from .models import InformeDano
 from .services.cliente_service import ClienteService
 from .services.informe_service import InformeService
@@ -31,7 +31,8 @@ logger = logging.getLogger(__name__)
 @solo_operarios
 @bloqueo_informe_pendiente
 def home(request):
-    return render(request, 'home.html')
+    ultimo_informe = InformeService.obtener_ultimo_informe()
+    return render(request, 'home.html', {'ultimo_informe': ultimo_informe})
 
 @never_cache
 @require_http_methods(["GET", "POST"])
@@ -221,3 +222,10 @@ def lista_clientes_view(request):
         return render(request, '_tabla_clientes.html', context)
 
     return render(request, 'ver_clientes.html', context)
+
+@never_cache
+@require_http_methods(["GET"])
+@solo_operarios
+def detalle_informe_view(request, uuid):
+    informe, piezas = InformeService.obtener_detalle_informe(uuid)
+    return render(request, 'detalle_informe.html', {'informe': informe, 'piezas': piezas,})
