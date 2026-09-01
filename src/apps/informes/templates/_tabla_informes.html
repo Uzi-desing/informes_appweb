@@ -20,7 +20,8 @@
         </thead>
         <tbody class="divide-y divide-black/10 dark:divide-gray-700">
             {% for informe in page_obj %}
-            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
+                data-url="{% url 'detalle_informe' informe.uuid_identificador %}">
                 <td class="px-4 py-3 text-sm font-medium text-black dark:text-gray-100">{{ informe.id }}</td>
                 <td class="px-4 py-3 text-sm text-black/70 dark:text-gray-300">{{ informe.fecha|date:"d/m/Y" }}</td>
                 <td class="px-4 py-3 text-sm text-black/70 dark:text-gray-300">{{ informe.cliente.nombre }}</td>
