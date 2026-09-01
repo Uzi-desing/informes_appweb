@@ -50,8 +50,8 @@
     </span>
     <nav class="flex items-center gap-2">
         {% if page_obj.has_previous %}
-        <button type="button" data-page="{{ page_obj.previous_page_number }}"
-                class="px-3 py-1.5 text-sm font-medium rounded-lg border border-black/10 dark:border-gray-600 hover:border-brand transition-all">Anterior</button>
+                <button type="button" data-page="{{ page_obj.previous_page_number }}"
+                class="px-3 py-1.5 text-sm font-medium rounded-lg border border-black/10 dark:border-gray-600 dark:text-white hover:border-brand transition-all">Anterior</button>
         {% endif %}
 
         {% for num in page_obj.paginator.page_range %}
@@ -59,13 +59,13 @@
             <span class="px-3 py-1.5 text-sm font-semibold rounded-lg bg-brand text-white">{{ num }}</span>
             {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
             <button type="button" data-page="{{ num }}"
-                    class="px-3 py-1.5 text-sm font-medium rounded-lg border border-black/10 dark:border-gray-600 hover:border-brand transition-all">{{ num }}</button>
+                    class="px-3 py-1.5 text-sm font-medium rounded-lg border border-black/10 dark:border-gray-600 dark:text-white hover:border-brand transition-all">{{ num }}</button>
             {% endif %}
         {% endfor %}
 
         {% if page_obj.has_next %}
         <button type="button" data-page="{{ page_obj.next_page_number }}"
-                class="px-3 py-1.5 text-sm font-medium rounded-lg border border-black/10 dark:border-gray-600 hover:border-brand transition-all">Siguiente</button>
+                class="px-3 py-1.5 text-sm font-medium rounded-lg border border-black/10 dark:border-gray-600 dark:text-white hover:border-brand transition-all">Siguiente</button>
         {% endif %}
     </nav>
 </div>
