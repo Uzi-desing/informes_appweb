@@ -200,3 +200,24 @@ def lista_informes_view(request):
         return render(request, '_tabla_informes.html', context)
 
     return render(request, 'ver_informes.html', context)
+
+@never_cache
+@require_http_methods(["GET"])
+@solo_operarios
+def lista_clientes_view(request):
+    q = request.GET.get('q', '').strip()
+    orden = request.GET.get('orden', 'nombre_asc')
+
+    page_obj = ClienteService.obtener_clientes(
+        request.GET.get('page'), q, orden
+    )
+
+    context = {
+        'page_obj': page_obj,
+        'filtros': {'q': q, 'orden': orden},
+    }
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, '_tabla_clientes.html', context)
+
+    return render(request, 'ver_clientes.html', context)

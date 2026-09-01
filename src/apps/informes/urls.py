@@ -9,4 +9,5 @@ urlpatterns = [
     path('registrar/<uuid:uuid>/cancelar/', views.cancelar_informe_view, name='cancelar_informe'),
     path('clientes/nuevo/', views.crear_cliente_view, name='crear_cliente'),
     path('informes/', views.lista_informes_view, name='lista_informes'),
+    path('clientes/', views.lista_clientes_view, name='lista_clientes'),
 ]
