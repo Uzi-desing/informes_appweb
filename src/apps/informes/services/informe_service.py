@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 from apps.informes.models import InformeDano, UsuarioTransportista, Vehiculo
 
@@ -82,3 +83,28 @@ class InformeService:
 
         paginator = Paginator(informes, 6)
         return paginator.get_page(page_number)
+
+    @staticmethod
+    def obtener_detalle_informe(uuid):
+        informe = get_object_or_404(
+            InformeDano.objects.select_related(
+                'empleado__usuario', 'cliente', 'transportista', 'vehiculo'
+            ),
+            uuid_identificador=uuid,
+        )
+        piezas = ( 
+            informe.piezas_rechazadas
+            .select_related('pieza__categoria', 'categoria_dano')
+            .order_by('id')
+        )
+
+        return informe, piezas
+
+    @staticmethod
+    def obtener_ultimo_informe():
+        return(
+            InformeDano.objects
+            .select_related('cliente', 'empleado__usuario', 'transportista', 'vehiculo')
+            .order_by('-fecha', '-id')
+            .first()
+        )
