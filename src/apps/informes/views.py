@@ -3,6 +3,7 @@ import logging
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import DatabaseError, IntegrityError
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
@@ -20,6 +21,7 @@ from .forms import (
 from .models import InformeDano
 from .services.cliente_service import ClienteService
 from .services.informe_service import InformeService
+from .services.pdf_service import PdfService
 from .services.pieza_service import PiezaService
 
 logger = logging.getLogger(__name__)
@@ -229,3 +231,13 @@ def lista_clientes_view(request):
 def detalle_informe_view(request, uuid):
     informe, piezas = InformeService.obtener_detalle_informe(uuid)
     return render(request, 'detalle_informe.html', {'informe': informe, 'piezas': piezas,})
+
+@never_cache
+@require_http_methods(["GET"])
+@solo_operarios
+def generar_reporte_pdf_view(request, uuid):
+    informe, _ = InformeService.obtener_detalle_informe(uuid)
+    pdf = PdfService.generar_reporte(informe)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="Informe_{informe.id}.pdf"'
+    return response
