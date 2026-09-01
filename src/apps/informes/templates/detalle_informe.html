@@ -19,11 +19,18 @@
                 {% endif %}
             </span>
         </div>
-        <a href="{% url 'lista_informes' %}"
-           class="inline-flex items-center justify-center rounded-md border border-black dark:border-gray-500 px-4 py-2 text-sm font-medium text-black dark:text-gray-200 hover:bg-brand hover:border-brand hover:text-white transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Volver al listado
-        </a>
+        <div class="flex flex-row gap-3">
+            <a href="{% url 'generar_reporte_pdf' informe.uuid_identificador %}" target="_blank"
+               class="inline-flex items-center justify-center rounded-md border border-black dark:border-gray-500 px-4 py-2 text-sm font-medium text-black dark:text-gray-200 hover:bg-brand hover:border-brand hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Generar Informe
+            </a>
+            <a href="{% url 'lista_informes' %}"
+               class="inline-flex items-center justify-center rounded-md border border-black dark:border-gray-500 px-4 py-2 text-sm font-medium text-black dark:text-gray-200 hover:bg-brand hover:border-brand hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Volver al listado
+            </a>
+        </div>
     </div>
 
     <div class="p-6 rounded-lg border border-black/10 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md">
