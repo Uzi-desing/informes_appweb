@@ -11,3 +11,9 @@ src/static/img/logo_darkmode.png
 # Virtual environments
 .venv
 .env
+
+# Node / Tailwind
+node_modules/
+src/static/css/tailwind.css
+src/staticfiles
+
