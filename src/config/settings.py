@@ -30,6 +30,7 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
 
 # Application definition
 
@@ -83,7 +84,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL', ''),
-        conn_max_age=600
+        conn_max_age=600,
+        conn_health_checks=True,
     )
 }
 
@@ -131,6 +133,32 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+
+# Whitenoise: Servir archivos estaticos en producción, comprimidos y con nombres hasheados para cacheo agresivo
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}
+
+# Seguridad en Producción
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = os.getenv('SECURE_SSL_REDIRECT', 'True') == 'True'
+SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '31536000'))
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Cookies de sesión y CSRF solo por HTTPS
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Cabeceras de seguridad adicionales
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'same-origin'
+X_FRAME_OPTIONS = 'DENY'
 
 
 # Email
@@ -182,3 +210,18 @@ LOGGING = {
 AZURE_CONTAINER_NAME = os.getenv('AZURE_CONTAINER_NAME')
 AZURE_ACCOUNT_NAME = os.getenv('AZURE_ACCOUNT_NAME')
 AZURE_ACCOUNT_KEY = os.getenv('AZURE_ACCOUNT_KEY')
+
+# Datos de subida (imagenes por formset)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 20 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+
+# Chequeo de Seguridad
+# Se omite durante collectstatic: en el build de Docker no existen aún los
+# secretos reales (se inyectan en runtime vía el secret manager).
+if not DEBUG and "collectstatic" not in os.sys.argv:
+    if not SECRET_KEY:
+        raise RuntimeError("SECRET_KEY no está definida en el entorno.")
+    if len(SECRET_KEY) < 50:
+        raise RuntimeError("SECRET_KEY demasiado corta para producción.")
+    if not ALLOWED_HOSTS:
+        raise RuntimeError("ALLOWED_HOSTS no esta definido en el entorno.")
