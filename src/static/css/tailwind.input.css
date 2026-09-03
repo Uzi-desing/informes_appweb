@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand: #fe2020;
+  --color-primary: #ffffff;
+  --color-secondary: #fe2020;
+  --color-tertiary: #000000;
+}
+
+@source "../../apps";
+@source "../../static/js";
