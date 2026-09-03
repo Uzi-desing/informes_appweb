@@ -1,24 +1,12 @@
 body {
     background: linear-gradient(to top, #ff6b6b 0%, #ffffff 70%);
+    transition: background-color 0.5s ease;
+}
+html.dark body {
+    background: linear-gradient(to top, #7f1d1d 0%, #1a1a1a 70%);
 }
 html {
     transition: background-color 1s ease, color 1s ease;
-}
-#dark-overlay {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(to top, #7f1d1d 0%, #1a1a1a 70%);
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
-    z-index: 0;
-}
-html.dark #dark-overlay {
-    opacity: 1;
-}
-body > *:not(#toggle-dark) {
-    position: relative;
-    z-index: 1;
 }
 @keyframes fade-up {
     from {
