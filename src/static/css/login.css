@@ -16,7 +16,7 @@ html {
 html.dark #dark-overlay {
     opacity: 1;
 }
-body > * {
+body > *:not(#toggle-dark) {
     position: relative;
     z-index: 1;
 }
