@@ -30,4 +30,10 @@ class RolAdmin(admin.ModelAdmin):
     list_display = ('puesto', 'slug')
     prepopulated_fields = {'slug': ('puesto',)}
 
+@admin.register(Empleado)
+class EmpleadoAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'rol', 'dni', 'telefono')
+    search_fields = ('usuario__username', 'usuario__first_name', 'usuario__last_name', 'dni')
+    list_filter = ('rol',)
+
 admin.site.register(Usuario, CustomUserAdmin)
