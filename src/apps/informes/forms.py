@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
+from django.forms.models import BaseInlineFormSet
 
 from .models import Cliente, InformeDano, PiezaRechazada, UsuarioTransportista, Vehiculo
 
@@ -131,17 +132,21 @@ class PiezaRechazadaForm(forms.ModelForm):
             raise ValidationError('La cantidad debe ser mayor a 0.')
         return cantidad
 
+class BasePiezaRechazadaFormSet(BaseInlineFormSet):
+    default_error_messages = {  # noqa: RUF012
+        'too_few_forms': 'Debe registrar al menos una pieza.',
+    }
+
+
 PiezaRechazadaFormSet = inlineformset_factory(
     parent_model=InformeDano,
     model=PiezaRechazada,
     form=PiezaRechazadaForm,
+    formset=BasePiezaRechazadaFormSet,
     extra=0,
     min_num=1,
     validate_min=True,
     can_delete=True,
-    error_messages={
-        'too_few_forms': 'Debe registrar al menos una pieza.',
-    },
 )
 
 # Formulario Cliente
