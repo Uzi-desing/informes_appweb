@@ -26,7 +26,8 @@ RUN .venv/bin/python src/manage.py collectstatic --noinput
 
 # ── Etapa 3: imagen final ──
 FROM python:3.14-slim
-RUN groupadd -r appuser && useradd -r -g appuser appuser
+RUN groupadd -r appuser && useradd -g appuser appuser
+ENV HOME=/app
 WORKDIR /app
 ENV PYTHONUNBUFFERED=1 \
     DJANGO_SETTINGS_MODULE=config.settings \
