@@ -12,4 +12,5 @@ urlpatterns = [
     path('clientes/', views.lista_clientes_view, name='lista_clientes'),
     path('informes/<uuid:uuid>/', views.detalle_informe_view, name='detalle_informe'),
     path('informes/<uuid:uuid>/pdf/', views.generar_reporte_pdf_view, name='generar_reporte_pdf'),
+    path('piezas/nuevo/', views.crear_pieza_view, name='crear_pieza'),
 ]
