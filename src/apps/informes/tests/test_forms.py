@@ -2,6 +2,7 @@ import pytest
 
 from apps.informes.forms import (
     InformeDanoForm,
+    PiezaForm,
     PiezaRechazadaFormSet,
     TransportistaForm,
     VehiculoForm,
@@ -71,6 +72,21 @@ def test_vehiculo_form_requiere_tipo():
     form = VehiculoForm(data={'patente': 'ABC123', 'tipo': ''})
     assert not form.is_valid()
     assert 'Seleccione el tipo de Transporte.' in str(form.errors['tipo'])
+
+
+@pytest.mark.django_db
+def test_pieza_form_valido(categoria):
+    form = PiezaForm(data={'categoria': categoria.pk, 'medida': '0.73'})
+    assert form.is_valid()
+    assert form.cleaned_data['medida'] == '0.73'
+
+
+@pytest.mark.django_db
+def test_pieza_form_requiere_campos():
+    form = PiezaForm(data={})
+    assert not form.is_valid()
+    assert 'categoria' in form.errors
+    assert 'medida' in form.errors
 
 
 @pytest.mark.django_db

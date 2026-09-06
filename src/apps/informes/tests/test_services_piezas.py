@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from apps.informes.models import Cliente
+from apps.informes.models import Cliente, Pieza
 from apps.informes.services.cliente_service import ClienteService
 from apps.informes.services.image_service import ImageProcessorService
 from apps.informes.services.pieza_service import PiezaService
@@ -37,6 +37,39 @@ def test_obtener_clientes_paginado_y_anotado(cliente):
 def test_obtener_clientes_filtro_por_nombre(cliente):
     page = ClienteService.obtener_clientes(1, q='cliente a')
     assert page.object_list.count() == 1
+
+
+@pytest.mark.django_db
+def test_crear_pieza_nueva(categoria):
+    pieza, creado = PiezaService.crear_pieza(categoria, '0.73')
+
+    assert creado is True
+    assert pieza.categoria == categoria
+    assert pieza.medida == '0.73'
+
+
+@pytest.mark.django_db
+def test_crear_pieza_duplicada_no_registra(categoria):
+    PiezaService.crear_pieza(categoria, '0.73')
+    pieza, creado = PiezaService.crear_pieza(categoria, '0.73')
+
+    assert creado is False
+    assert Pieza.objects.count() == 1
+    assert pieza.pk == Pieza.objects.first().pk
+
+
+@pytest.mark.django_db
+def test_crear_pieza_normaliza_medida(categoria):
+    pieza, creado = PiezaService.crear_pieza(categoria, ' 0,73 ')
+
+    assert creado is True
+    assert pieza.medida == '0.73'
+
+
+@pytest.mark.django_db
+def test_crear_pieza_categoria_inexistente():
+    with pytest.raises(ValueError):
+        PiezaService.crear_pieza(99999, '0.73')
 
 
 @pytest.mark.django_db
