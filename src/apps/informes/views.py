@@ -14,6 +14,7 @@ from .decorators import bloqueo_informe_pendiente, solo_operarios
 from .forms import (
     ClienteForm,
     InformeDanoForm,
+    PiezaForm,
     PiezaRechazadaFormSet,
     TransportistaForm,
     VehiculoForm,
@@ -241,3 +242,43 @@ def generar_reporte_pdf_view(request, uuid):
     response = HttpResponse(pdf, content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="Informe_{informe.id}.pdf"'
     return response
+
+@never_cache
+@require_http_methods(["GET", "POST"])
+@solo_operarios
+def crear_pieza_view(request):
+    if request.method == 'POST':
+        pieza_form = PiezaForm(request.POST)
+
+        if pieza_form.is_valid():
+            try: 
+                pieza, creado = PiezaService.crear_pieza(
+                    pieza_form.cleaned_data['categoria'],
+                    pieza_form.cleaned_data['medida'],
+                )
+
+                if creado:
+                    logger.info(f"Pieza '{pieza}' creada por {request.user.username}")
+                    messages.success(request, f"Pieza {pieza} registrada exitosamente.")
+
+                else:
+                    logger.info(f"Intento de duplicar pieza '{pieza}' por {request.user.username}.")
+                    messages.info(request, f"La pieza {pieza} ya estaba registrada.")
+
+                return redirect('home')
+
+            except (ValidationError, IntegrityError, DatabaseError) as e:
+                logger.error(f"Error técnico al guardar pieza: {e!s}")
+                messages.error(request, "No se pudo guardar la pieza, verifique la información.")
+
+            except Exception as e:
+                logger.error(f"Error al crear pieza: {e!s}")
+                messages.error(request, 'Error interno al guardar pieza.')
+
+        else:
+            messages.error(request, "Revisa los campos del formulario")
+
+    else:
+        pieza_form = PiezaForm()
+
+    return render(request, 'crear_pieza.html', {'pieza_form': pieza_form})

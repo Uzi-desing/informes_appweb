@@ -3,7 +3,14 @@ from django.core.exceptions import ValidationError
 from django.forms import inlineformset_factory
 from django.forms.models import BaseInlineFormSet
 
-from .models import Cliente, InformeDano, PiezaRechazada, UsuarioTransportista, Vehiculo
+from .models import (
+    Cliente,
+    InformeDano,
+    Pieza,
+    PiezaRechazada,
+    UsuarioTransportista,
+    Vehiculo,
+)
 
 CLASE_INPUT = (
     'w-full rounded-lg border border-gray-300 dark:border-gray-600 '
@@ -169,5 +176,25 @@ class ClienteForm(forms.ModelForm):
             'domicilio': 'El Domicilio es obligatorio.',
         }
         for campo, mensaje in mensajes_personalizados.items():
+            self.fields[campo].required = True
+            self.fields[campo].error_messages['required'] = mensaje
+
+# Formulario para crear pieza
+class PiezaForm(forms.ModelForm):
+    class Meta:
+        model = Pieza
+        fields = ['categoria', 'medida']  # noqa: RUF012
+        widgets = {  # noqa: RUF012
+            'categoria': forms.Select(attrs={'class': CLASE_INPUT}),
+            'medida': forms.TextInput(attrs={'class': CLASE_INPUT}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        mensaje_personalizado = {
+            'categoria': 'Seleccione una categoria.',
+            'medida': 'La medida es obligatoria.',
+        }
+        for campo, mensaje in mensaje_personalizado.items():
             self.fields[campo].required = True
             self.fields[campo].error_messages['required'] = mensaje
