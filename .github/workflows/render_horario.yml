@@ -1,12 +1,10 @@
 name: Encender y Apagar Render
 
 on:
+  workflow_dispatch:
   schedule:
-  # Encender Lunes a Viernes a las 8:00 AM (Hora Argentina / 11:00 UTC)
-  - cron: '0 11 * * 1-5'
-
-  # Apagar Lunes a Viernes a las 17:00 PM (Hora Argentina / 20:00 UTC)
-  - cron: '0 20 * * 1-5'
+    - cron: '0 11 * * 1-5'
+    - cron: '0 20 * * 1-5'
 
 jobs:
   manejar-servidor-render:
