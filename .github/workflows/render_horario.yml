@@ -1,0 +1,36 @@
+name: Encender y Apagar Render
+
+on:
+  schedule:
+  # Encender Lunes a Viernes a las 8:00 AM (Hora Argentina / 11:00 UTC)
+  - cron: '0 11 * * 1-5'
+
+  # Apagar Lunes a Viernes a las 17:00 PM (Hora Argentina / 20:00 UTC)
+  - cron: '0 20 * * 1-5'
+
+jobs:
+  manejar-servidor-render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determinar Acción (Encender o Apagar)
+        id: definir_accion
+        run: |
+          # Obtenemos la hora en formato UTC
+          HORA_UTC=$(date -u +%H)
+          
+          # Si son las 11 UTC (8 AM Argentina), la acción es 'resume'
+          if [ "$HORA_UTC" -eq "11" ]; then
+            echo "ACCION=resume" >> $GITHUB_ENV
+            echo "Es hora de encender el servidor."
+          else
+            # Si no, la acción es 'suspend'
+            echo "ACCION=suspend" >> $GITHUB_ENV
+            echo "Es hora de apagar el servidor."
+          fi
+
+      - name: Enviar comando a la API de Render
+        run: |
+          curl --request POST \
+            --url "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/${{ env.ACCION }}" \
+            --header 'accept: application/json' \
+            --header "authorization: Bearer ${{ secrets.RENDER_API_KEY }}"
